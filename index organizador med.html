@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunicação Assistida - Órtese Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .text-display {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+
+        .text-display h2 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .message-display {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            min-height: 120px;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #2d3748;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message-display:empty::before {
+            content: "Digite sua mensagem aqui...";
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .quick-phrases {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .quick-phrases h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .phrases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .phrase-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .phrase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .keyboard-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .keyboard-container h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .key {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2d3748;
+            min-width: 50px;
+            text-align: center;
+            user-select: none;
+        }
+
+        .key:hover {
+            background: linear-gradient(145deg, #e2e8f0, #cbd5e0);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .key:active {
+            transform: translateY(0);
+            background: linear-gradient(145deg, #cbd5e0, #a0aec0);
+        }
+
+        .key.space {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .key.special {
+            background: linear-gradient(145deg, #fed7d7, #feb2b2);
+            color: #c53030;
+            font-size: 0.9rem;
+        }
+
+        .key.enter {
+            background: linear-gradient(145deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .emergency-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-left: 5px solid #f56565;
+        }
+
+        .emergency-panel h3 {
+            color: #c53030;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .emergency-btn {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+
+        .settings-panel h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 25px;
+            background: #e2e8f0;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #48bb78;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(25px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .phrases-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            .key {
+                padding: 0.8rem;
+                min-width: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        .accessibility-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="accessibility-indicator" id="accessibilityIndicator">
+        🔊 Síntese de Voz Ativa
+    </div>
+
+    <div class="header">
+        <h1>💬 Comunicação Assistida</h1>
+        <p>Sistema adaptado para órtese digital - Facilitando a comunicação</p>
+    </div>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="text-display">
+                <h2>📝 Sua Mensagem</h2>
+                <div class="message-display" id="messageDisplay"></div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="speakMessage()">🔊 Falar</button>
+                    <button class="btn btn-secondary" onclick="copyMessage()">📋 Copiar</button>
+                    <button class="btn btn-warning" onclick="saveMessage()">💾 Salvar</button>
+                    <button class="btn btn-danger" onclick="clearMessage()">🗑️ Limpar</button>
+                </div>
+                <div class="volume-control">
+                    <span>🔊 Volume:</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.8">
+                    <span id="volumeDisplay">80%</span>
+                </div>
+            </div>
+
+            <div class="quick-phrases">
+                <h3>⚡ Frases Rápidas</h3>
+                <div class="phrases-grid" id="phrasesGrid">
+                    <!-- Frases serão inseridas dinamicamente -->
+                </div>
+            </div>
+
+            <div class="emergency-panel">
+                <h3>🚨 Emergência</h3>
+                <button class="emergency-btn" onclick="emergencyCall('Preciso de ajuda médica urgente!')">🏥 Ajuda Médica</button>
+                <button class="emergency-btn" onclick="emergencyCall('Estou sentindo dor!')">😣 Sinto Dor</button>
+                <button class="emergency-btn" onclick="emergencyCall('Preciso de água!')">💧 Preciso Água</button>
+                <button class="emergency-btn" onclick="emergencyCall('Chame minha família!')">👨‍👩‍👧‍👦 Chamar Família</button>
+            </div>
+        </div>
+
+        <div class="keyboard-container">
+            <h3>⌨️ Teclado Virtual Adaptado</h3>
+            <div class="keyboard" id="virtualKeyboard">
+                <!-- Teclado será criado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-panel">
+        <h3>⚙️ Configurações</h3>
+        <div class="setting-item">
+            <span>Síntese de Voz</span>
+            <div class="toggle active" id="speechToggle" onclick="toggleSpeech()"></div>
+        </div>
+        <div class="setting-item">
+            <span>Auto-Falar ao Completar</span>
+            <div class="toggle" id="autoSpeakToggle" onclick="toggleAutoSpeak()"></div>
+        </div>
+        <div class="setting-item">
+            <span>Som de Confirmação</span>
+            <div class="toggle active" id="soundToggle" onclick="toggleSound()"></div>
+        </div>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let currentMessage = '';
+        let settings = {
+            speechEnabled: true,
+            autoSpeak: false,
+            soundEnabled: true,
+            volume: 0.8
+        };
+
+        // Frases pré-definidas organizadas por categoria
+        const quickPhrases = {
+            'Básicas': [
+                'Olá, como você está?',
+                'Obrigado(a)',
+                'Por favor',
+                'Desculpe',
+                'Sim',
+                'Não',
+                'Talvez',
+                'Não entendi'
+            ],
+            'Necessidades': [
+                'Tenho fome',
+                'Tenho sede',
+                'Preciso ir ao banheiro',
+                'Estou com frio',
+                'Estou com calor',
+                'Preciso descansar',
+                'Quero tomar banho',
+                'Preciso de ajuda'
+            ],
+            'Sentimentos': [
+                'Estou bem',
+                'Não estou bem',
+                'Estou triste',
+                'Estou feliz',
+                'Estou preocupado(a)',
+                'Estou com medo',
+                'Estou confuso(a)',
+                'Me sinto melhor'
+            ],
+            'Comunicação': [
+                'Pode repetir?',
+                'Fale mais devagar',
+                'Não consigo falar',
+                'Entendi',
+                'Explique melhor',
+                'Onde está...?',
+                'Quando vai ser?',
+                'Quem está aqui?'
+            ]
+        };
+
+        // Layout do teclado otimizado para órtese
+        const keyboardLayout = [
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+            ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+            ['BACKSPACE', 'SPACE', 'ENTER']
+        ];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            createKeyboard();
+            createQuickPhrases();
+            setupEventListeners();
+            loadSettings();
+            
+            // Verificar suporte à síntese de voz
+            if (!('speechSynthesis' in window)) {
+                alert('Seu navegador não suporta síntese de voz. Algumas funcionalidades podem não funcionar.');
+                settings.speechEnabled = false;
+                updateAccessibilityIndicator();
+            }
+        });
+
+        // Criar teclado virtual
+        function createKeyboard() {
+            const keyboard = document.getElementById('virtualKeyboard');
+            
+            keyboardLayout.forEach(row => {
+                const keyboardRow = document.createElement('div');
+                keyboardRow.className = 'keyboard-row';
+                
+                row.forEach(key => {
+                    const keyElement = document.createElement('button');
+                    keyElement.className = 'key';
+                    keyElement.textContent = key;
+                    
+                    if (key === 'SPACE') {
+                        keyElement.className += ' space';
+                        keyElement.textContent = 'ESPAÇO';
+                    } else if (key === 'BACKSPACE') {
+                        keyElement.className += ' special';
+                        keyElement.textContent = '⌫ APAGAR';
+                    } else if (key === 'ENTER') {
+                        keyElement.className += ' enter';
+                        keyElement.textContent = '↵ FALAR';
+                    }
+                    
+                    keyElement.onclick = () => handleKeyPress(key);
+                    keyboardRow.appendChild(keyElement);
+                });
+                
+                keyboard.appendChild(keyboardRow);
+            });
+        }
+
+        // Criar frases rápidas
+        function createQuickPhrases() {
+            const phrasesGrid = document.getElementById('phrasesGrid');
+            
+            Object.entries(quickPhrases).forEach(([category, phrases]) => {
+                phrases.forEach(phrase => {
+                    const button = document.createElement('button');
+                    button.className = 'phrase-btn';
+                    button.textContent = phrase;
+                    button.onclick = () => selectQuickPhrase(phrase);
+                    phrasesGrid.appendChild(button);
+                });
+            });
+        }
+
+        // Manipular teclas pressionadas
+        function handleKeyPress(key) {
+            playConfirmationSound();
+            
+            switch(key) {
+                case 'BACKSPACE':
+                    if (currentMessage.length > 0) {
+                        currentMessage = currentMessage.slice(0, -1);
+                        updateMessageDisplay();
+                    }
+                    break;
+                case 'SPACE':
+                    currentMessage += ' ';
+                    updateMessageDisplay();
+                    break;
+                case 'ENTER':
+                    if (currentMessage.trim()) {
+                        speakMessage();
+                    }
+                    break;
+                default:
+                    currentMessage += key.toLowerCase();
+                    updateMessageDisplay();
+                    
+                    // Auto-falar se habilitado e a palavra estiver completa
+                    if (settings.autoSpeak && key === ' ') {
+                        speakMessage();
+                    }
+                    break;
+            }
+        }
+
+        // Selecionar frase rápida
+        function selectQuickPhrase(phrase) {
+            currentMessage = phrase;
+            updateMessageDisplay();
+            playConfirmationSound();
+            
+            if (settings.autoSpeak) {
+                setTimeout(() => speakMessage(), 500);
+            }
+        }
+
+        // Atualizar display da mensagem
+        function updateMessageDisplay() {
+            const display = document.getElementById('messageDisplay');
+            display.textContent = currentMessage;
+        }
+
+        // Falar mensagem
+        function speakMessage() {
+            if (!settings.speechEnabled || !currentMessage.trim()) {
+                return;
+            }
+
+            // Parar qualquer fala em andamento
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(currentMessage);
+            utterance.lang = 'pt-BR';
+            utterance.volume = settings.volume;
+            utterance.rate = 0.8; // Velocidade mais lenta para melhor compreensão
+            utterance.pitch = 1;
+
+            // Tentar usar uma voz em português
+            const voices = speechSynthesis.getVoices();
+            const portugueseVoice = voices.find(voice => 
+                voice.lang.includes('pt') || voice.name.includes('Portuguese')
+            );
+            if (portugueseVoice) {
+                utterance.voice = portugueseVoice;
+            }
+
+            speechSynthesis.speak(utterance);
+            playConfirmationSound();
+        }
+
+        // Copiar mensagem
+        function copyMessage() {
+            if (!currentMessage.trim()) return;
+            
+            navigator.clipboard.writeText(currentMessage).then(() => {
+                alert('Mensagem copiada!');
+                playConfirmationSound();
+            });
+        }
+
+        // Salvar mensagem
+        function saveMessage() {
+            if (!currentMessage.trim()) return;
+            
+            const savedMessages = JSON.parse(localStorage.getItem('savedMessages') || '[]');
+            savedMessages.push({
+                text: currentMessage,
+                timestamp: new Date().toLocaleString('pt-BR')
+            });
+            localStorage.setItem('savedMessages', JSON.stringify(savedMessages));
+            
+            alert('Mensagem salva!');
+            playConfirmationSound();
+        }
+
+        // Limpar mensagem
+        function clearMessage() {
+            currentMessage = '';
+            updateMessageDisplay();
+            playConfirmationSound();
+        }
+
+        // Chamada de emergência
+        function emergencyCall(message) {
+            currentMessage = message;
+            updateMessageDisplay();
+            speakMessage();
+            
+            // Repetir 3 vezes para garantir que seja ouvida
+            setTimeout(() => speakMessage(), 2000);
+            setTimeout(() => speakMessage(), 4000);
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            
+            volumeSlider.addEventListener('input', function() {
+                settings.volume = parseFloat(this.value);
+                volumeDisplay.textContent = Math.round(settings.volume * 100) + '%';
+                saveSettings();
+            });
+
+            // Suporte a teclado físico
+            document.addEventListener('keydown', function(event) {
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                
+                event.preventDefault();
+                
+                if (event.key === 'Backspace') {
+                    handleKeyPress('BACKSPACE');
+                } else if (event.key === ' ') {
+                    handleKeyPress('SPACE');
+                } else if (event.key === 'Enter') {
+                    handleKeyPress('ENTER');
+                } else if (event.key.length === 1 && event.key.match(/[a-zA-Z]/)) {
+                    handleKeyPress(event.key.toUpperCase());
+                }
+            });
+        }
+
+        // Toggles de configuração
+        function toggleSpeech() {
+            settings.speechEnabled = !settings.speechEnabled;
+            document.getElementById('speechToggle').classList.toggle('active');
+            updateAccessibilityIndicator();
+            saveSettings();
+        }
+
+        function toggleAutoSpeak() {
+            settings.autoSpeak = !settings.autoSpeak;
+            document.getElementById('autoSpeakToggle').classList.toggle('active');
+            saveSettings();
+        }
+
+        function toggleSound() {
+            settings.soundEnabled = !settings.soundEnabled;
+            document.getElementById('soundToggle').classList.toggle('active');
+            saveSettings();
+        }
+
+        // Atualizar indicador de acessibilidade
+        function updateAccessibilityIndicator() {
+            const indicator = document.getElementById('accessibilityIndicator');
+            if (settings.speechEnabled) {
+                indicator.textContent = '🔊 Síntese de Voz Ativa';
+                indicator.style.background = 'rgba(72, 187, 120, 0.9)';
+            } else {
+                indicator.textContent = '🔇 Síntese de Voz Desativada';
+                indicator.style.background = 'rgba(245, 101, 101, 0.9)';
+            }
+        }
+
+        // Som de confirmação
+        function playConfirmationSound() {
+            if (!settings.soundEnabled) return;
+            
+            // Criar um tom simples usando Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Salvar configurações
+        function saveSettings() {
+            localStorage.setItem('ortesesSettings', JSON.stringify(settings));
+        }
+
+        // Carregar configurações
+        function loadSettings() {
+            const saved = localStorage.getItem('ortesesSettings');
+            if (saved) {
+                settings = {...settings, ...JSON.parse(saved)};
+                
+                // Aplicar configurações na interface
+                document.getElementById('volumeSlider').value = settings.volume;
+                document.getElementById('volumeDisplay').textContent = Math.round(settings.volume * 100) + '%';
+                
+                if (!settings.speechEnabled) {
+                    document.getElementById('speechToggle').classList.remove('active');
+                }
+                if (settings.autoSpeak) {
+                    document.getElementById('autoSpeakToggle').classList.add('active');
+                }
+                if (!settings.soundEnabled) {
+                    document.getElementById('soundToggle').classList.remove('active');
+                }
+                
+                updateAccessibilityIndicator();
+            }
+        }
+
+        // Carregar vozes quando disponíveis
+        speechSynthesis.onvoiceschanged = function() {
+            // As vozes agora estão disponíveis
+        };
+    </script>
+</body>
+</html>
